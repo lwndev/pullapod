@@ -30,16 +30,16 @@
     "cli",
     "audio"
   ],
-  "author": "",
+  "author": "Leif Nelson and Robots",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YOUR_USERNAME/podcast-puller.git"
+    "url": "git+https://github.com/lwndev/pullapod.git"
   },
   "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/podcast-puller/issues"
+    "url": "https://github.com/lwndev/pullapod/issues"
   },
-  "homepage": "https://github.com/YOUR_USERNAME/podcast-puller#readme",
+  "homepage": "https://github.com/lwndev/pullapod#readme",
   "dependencies": {
     "commander": "^12.0.0",
     "rss-parser": "^3.13.0",

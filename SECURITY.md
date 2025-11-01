@@ -16,7 +16,7 @@ We take the security of pullapod seriously. If you believe you have found a secu
 
 Instead, please report them via one of the following methods:
 
-1. **Email**: Send an email to [security@pullapod.com] with:
+1. **Email**: Send an email to [security@pullapod.app] with:
    - A description of the vulnerability
    - Steps to reproduce the issue
    - Potential impact
