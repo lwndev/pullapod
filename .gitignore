@@ -15,6 +15,10 @@ dist/
 .env
 .env.local
 
+# NPM
+*.tgz
+.npmrc.local
+
 # IDE
 .vscode/
 .idea/
