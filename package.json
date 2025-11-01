@@ -1,5 +1,5 @@
 {
-  "name": "@lwndev/pullapod",
+  "name": "pullapod",
   "version": "0.1.0",
   "description": "Pull a Pod - A command-line utility to download podcast episodes from RSS feeds",
   "main": "dist/index.js",
@@ -40,9 +40,6 @@
     "url": "https://github.com/lwndev/pullapod/issues"
   },
   "homepage": "https://github.com/lwndev/pullapod#readme",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "dependencies": {
     "commander": "^12.0.0",
     "rss-parser": "^3.13.0",
