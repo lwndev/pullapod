@@ -21,7 +21,13 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "audit": "npm audit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "preversion": "npm run build && npm test",
+    "version": "git add package.json package-lock.json",
+    "postversion": "git push && git push --tags",
+    "release:patch": "npm version patch",
+    "release:minor": "npm version minor",
+    "release:major": "npm version major"
   },
   "keywords": [
     "podcast",

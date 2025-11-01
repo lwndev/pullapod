@@ -113,7 +113,37 @@ npm run dev -- --feed <url> --date 2024-01-01
 
 # Watch mode
 npm run watch
+
+# Run tests
+npm test
+
+# Security audit
+npm run audit
 ```
+
+## Release Process
+
+To create a new release:
+
+```bash
+# Patch release (0.1.0 → 0.1.1) - bug fixes
+npm run release:patch
+
+# Minor release (0.1.0 → 0.2.0) - new features
+npm run release:minor
+
+# Major release (0.1.0 → 1.0.0) - breaking changes
+npm run release:major
+```
+
+This will automatically:
+1. Run build and tests
+2. Update version in package.json and package-lock.json
+3. Create a git commit with the version number
+4. Create a git tag (e.g., `v0.1.1`)
+5. Push commits and tags to GitHub
+
+Once pushed, create a GitHub Release from the tag to trigger automated npm publishing.
 
 ## License
 
