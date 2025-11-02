@@ -2,18 +2,23 @@
 
 import { Command } from 'commander';
 import * as path from 'path';
+import { readFileSync } from 'fs';
 import { PodcastParser } from './parser';
 import { EpisodeFilter } from './filter';
 import { Downloader } from './downloader';
 import { MetadataEmbedder } from './metadata';
 import { FilterOptions } from './types';
 
+const packageJson = JSON.parse(
+  readFileSync(path.join(__dirname, '../package.json'), 'utf-8')
+);
+
 const program = new Command();
 
 program
   .name('pullapod')
   .description('Pull a Pod - Download podcast episodes from RSS feeds')
-  .version('0.1.0');
+  .version(packageJson.version);
 
 program
   .requiredOption('-f, --feed <url>', 'RSS feed URL')
