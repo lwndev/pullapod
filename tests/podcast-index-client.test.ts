@@ -7,7 +7,7 @@ import { PodcastIndexClient } from '../src/clients/podcast-index-client';
 import { HttpClientError } from '../src/clients/base-client';
 
 // Helper to create a proper mock Response
-function createMockResponse(data: any, status: number = 200, statusText: string = 'OK') {
+function createMockResponse(data: unknown, status: number = 200, statusText: string = 'OK') {
   return {
     ok: status >= 200 && status < 300,
     status,
@@ -15,8 +15,8 @@ function createMockResponse(data: any, status: number = 200, statusText: string 
     headers: new Headers({
       'Content-Type': 'application/json',
     }),
-    json: async () => data,
-    text: async () => JSON.stringify(data),
+    json: () => Promise.resolve(data),
+    text: () => Promise.resolve(JSON.stringify(data)),
   } as Response;
 }
 

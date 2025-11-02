@@ -6,7 +6,7 @@ import fetchMock from 'jest-fetch-mock';
 import { BaseHttpClient, HttpClientError } from '../src/clients/base-client';
 
 // Helper to create a proper mock Response
-function createMockResponse(data: any, status: number = 200, statusText: string = 'OK', contentType: string = 'application/json') {
+function createMockResponse(data: unknown, status: number = 200, statusText: string = 'OK', contentType: string = 'application/json') {
   return {
     ok: status >= 200 && status < 300,
     status,
@@ -14,8 +14,8 @@ function createMockResponse(data: any, status: number = 200, statusText: string 
     headers: new Headers({
       'Content-Type': contentType,
     }),
-    json: async () => (typeof data === 'string' ? JSON.parse(data) : data),
-    text: async () => (typeof data === 'string' ? data : JSON.stringify(data)),
+    json: () => Promise.resolve(typeof data === 'string' ? JSON.parse(data) : data),
+    text: () => Promise.resolve(typeof data === 'string' ? data : JSON.stringify(data)),
   } as Response;
 }
 
@@ -25,11 +25,11 @@ class TestClient extends BaseHttpClient {
     super({ baseUrl });
   }
 
-  public async testGet<T = any>(path: string, params?: Record<string, string | number | boolean>) {
+  public async testGet<T = unknown>(path: string, params?: Record<string, string | number | boolean>) {
     return this.get<T>(path, params);
   }
 
-  public async testPost<T = any>(path: string, body?: any) {
+  public async testPost<T = unknown>(path: string, body?: unknown) {
     return this.post<T>(path, body);
   }
 
@@ -69,8 +69,8 @@ describe('BaseHttpClient', () => {
     it('should filter out undefined and null parameters', () => {
       const url = client.testBuildUrl('/test', {
         valid: 'yes',
-        invalid: undefined as any,
-        alsoInvalid: null as any,
+        invalid: undefined as unknown as string,
+        alsoInvalid: null as unknown as string,
       });
       expect(url).toBe('https://api.example.com/test?valid=yes');
     });

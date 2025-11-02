@@ -20,9 +20,11 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "lint": "eslint src tests examples --ext .ts",
+    "lint:fix": "eslint src tests examples --ext .ts --fix",
     "audit": "npm audit",
     "prepublishOnly": "npm run build",
-    "preversion": "npm run build && npm test",
+    "preversion": "npm run build && npm test && npm run lint",
     "version": "git add package.json package-lock.json",
     "postversion": "git push && git push --tags",
     "release:patch": "npm version patch",
@@ -64,7 +66,8 @@
     "nock": "^13.5.4",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^8.46.2"
   },
   "engines": {
     "node": ">=18.0.0"
