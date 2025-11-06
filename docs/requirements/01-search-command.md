@@ -28,6 +28,7 @@ pullapod search <query> [options]
 
 - `--max <number>` - Maximum results to return (default: 10, range: 1-100)
 - `--title-only` - Search titles only instead of all fields (more precise)
+- `--similar` - Include similar matches in results (fuzzy matching)
 - `--language <code>` - Filter by language code (e.g., 'en', 'es', 'fr')
 
 ### Examples
@@ -44,6 +45,9 @@ pullapod search "The Daily" --title-only
 
 # Filter by language
 pullapod search technology --language en
+
+# Include similar matches (fuzzy search)
+pullapod search "javascrpt" --similar
 ```
 
 ## Functional Requirements
@@ -145,6 +149,7 @@ Tip: Download episodes with: pullapod <feed-url> --date YYYY-MM-DD
 await client.searchByTerm({
   q: query,
   max: maxResults,
+  similar: similarFlag,  // Optional: include similar matches
   // Note: language filtering not directly supported by searchByTerm
 });
 ```
@@ -154,6 +159,7 @@ await client.searchByTerm({
 await client.searchByTitle({
   q: query,
   max: maxResults,
+  similar: similarFlag,  // Optional: include similar matches
   // Note: language filtering not directly supported by searchByTitle
 });
 ```
@@ -210,7 +216,6 @@ From `PodcastFeed` interface:
 - Add `--category` filter option
 - Interactive result selection (prompt user to choose)
 - Cache recent searches for faster repeat queries
-- Add fuzzy matching for typos
 
 ## Acceptance Criteria
 
