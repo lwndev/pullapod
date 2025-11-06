@@ -188,19 +188,25 @@ From `PodcastFeed` interface:
 - `itunesId` - iTunes ID (optional)
 - `explicit` - Explicit flag
 - `medium` - Content type
-- `lastUpdateTime` - Last update timestamp
+- `lastUpdateTime` - Last update timestamp (channel-level)
+- `newestItemPublishTime` - Most recent episode publish time (more accurate for status)
 - `lastCrawlTime` - Last crawl timestamp
-- `dead` - Dead feed flag
+- `dead` - Dead feed flag (0 or 1)
 - `crawlErrors` - Error count
 - `parseErrors` - Parse error count
 
-### Activity Calculation
-Calculate recent activity by comparing `lastUpdateTime` with:
-- 3 days ago: Episodes within 3 days
-- 30 days ago: Episodes within 30 days
-- 90 days ago: Episodes within 90 days
+### Feed Status Determination
+Determine feed health status using:
+- **Dead**: `dead === 1`
+- **Active**: `dead === 0` AND `newestItemPublishTime` within 90 days of current time
+- **Inactive**: `dead === 0` AND `newestItemPublishTime` older than 90 days
 
-Note: Initial implementation will show last update time. Full activity metrics require additional API call to `getEpisodesByFeedId()` with `since` parameter.
+### Activity Calculation
+The basic feed endpoint provides:
+- `lastUpdateTime` - Channel-level update time
+- `newestItemPublishTime` - Most recent episode publish time
+
+For detailed activity metrics (episodes in last 3/30/90 days), an additional API call to `getEpisodesByFeedId()` with `since` parameter is required. Initial implementation may show only `lastUpdateTime` or `newestItemPublishTime` as "Last Updated" rather than episode counts per timeframe.
 
 ## Dependencies
 
@@ -230,7 +236,7 @@ Note: Initial implementation will show last update time. Full activity metrics r
 - Language code formatting
 - Date/time relative formatting
 - Category hierarchy formatting
-- Status determination logic
+- Status determination logic (dead flag, newestItemPublishTime comparison)
 - HTML stripping from descriptions
 
 ### Integration Tests
