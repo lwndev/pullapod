@@ -28,7 +28,6 @@ pullapod search <query> [options]
 
 - `--max <number>` - Maximum results to return (default: 10, range: 1-100)
 - `--title-only` - Search titles only instead of all fields (more precise)
-- `--clean` - Only return family-friendly content
 - `--language <code>` - Filter by language code (e.g., 'en', 'es', 'fr')
 
 ### Examples
@@ -45,9 +44,6 @@ pullapod search "The Daily" --title-only
 
 # Filter by language
 pullapod search technology --language en
-
-# Family-friendly only
-pullapod search comedy --clean
 ```
 
 ## Functional Requirements
@@ -149,7 +145,6 @@ Tip: Download episodes with: pullapod <feed-url> --date YYYY-MM-DD
 await client.searchByTerm({
   q: query,
   max: maxResults,
-  clean: cleanFlag,
   // Note: language filtering not directly supported by searchByTerm
 });
 ```
@@ -159,7 +154,6 @@ await client.searchByTerm({
 await client.searchByTitle({
   q: query,
   max: maxResults,
-  clean: cleanFlag,
   // Note: language filtering not directly supported by searchByTitle
 });
 ```
