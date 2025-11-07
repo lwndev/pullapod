@@ -6,16 +6,20 @@ A command-line utility to download podcast episodes from RSS feeds with proper n
 
 ### CLI Tool
 
-- Download podcast episodes from any RSS feed
-- Filter episodes by:
-  - Specific publish date
-  - Date range
-  - Episode name (partial match)
-- Automatically downloads episode artwork
-- Embeds artwork and metadata into MP3 files
-- Organizes downloads into podcast-specific folders
-- Clean, sanitized filenames (no GUIDs!)
-- Progress indicators for downloads
+- **Search for podcasts** using Podcast Index API
+  - Search by keywords, title, author
+  - Filter by language
+  - Find feed URLs for downloading
+- **Download podcast episodes** from any RSS feed
+  - Filter episodes by:
+    - Specific publish date
+    - Date range
+    - Episode name (partial match)
+  - Automatically downloads episode artwork
+  - Embeds artwork and metadata into MP3 files
+  - Organizes downloads into podcast-specific folders
+  - Clean, sanitized filenames (no GUIDs!)
+  - Progress indicators for downloads
 
 ### API Clients
 
@@ -44,11 +48,63 @@ npm link
 
 ### CLI Usage
 
+#### Search for Podcasts
+
+First, you need to configure your Podcast Index API credentials:
+
+```bash
+# Set environment variables
+export PODCAST_INDEX_API_KEY="your-api-key"
+export PODCAST_INDEX_API_SECRET="your-api-secret"
+
+# Or create a .env file
+cp .env.example .env
+# Edit .env and add your credentials
+```
+
+Get free API keys at https://api.podcastindex.org/
+
+**Search Command:**
+
+```bash
+pullapod search <query> [options]
+```
+
+**Search Options:**
+
+- `--max <number>` - Maximum number of results (1-100, default: 10)
+- `--title-only` - Search titles only (more precise)
+- `--similar` - Include similar matches (fuzzy matching)
+- `--language <code>` - Filter by language code (e.g., "en", "es")
+
+**Search Examples:**
+
+```bash
+# Basic search
+pullapod search javascript
+
+# Search with result limit
+pullapod search "web development" --max 20
+
+# Title-only search (more precise)
+pullapod search "The Daily" --title-only
+
+# Filter by language
+pullapod search technology --language en
+
+# Include similar matches (fuzzy search)
+pullapod search "javascrpt" --similar
+```
+
+The search results will show you the feed URL which you can use with the download command below.
+
+#### Download Podcast Episodes
+
 ```bash
 pullapod --feed <RSS_URL> [options]
 ```
 
-#### CLI Options
+**Download Options:**
 
 - `-f, --feed <url>` - RSS feed URL (required)
 - `-o, --output <directory>` - Output directory (defaults to current directory)
@@ -60,7 +116,7 @@ pullapod --feed <RSS_URL> [options]
 - `-h, --help` - Display help
 - `-V, --version` - Display version
 
-#### CLI Examples
+**Download Examples:**
 
 Download an episode from a specific date:
 ```bash
@@ -85,6 +141,17 @@ pullapod --feed https://example.com/podcast.rss --date 2024-01-15 --output ~/Pod
 Download without embedding metadata:
 ```bash
 pullapod --feed https://example.com/podcast.rss --date 2024-01-15 --no-metadata
+```
+
+**Complete Workflow Example:**
+
+```bash
+# 1. Search for a podcast
+pullapod search "javascript podcast" --max 5
+
+# 2. Copy the feed URL from the search results
+# 3. Download a specific episode
+pullapod --feed https://feeds.fireside.fm/javascriptjabber/rss --date 2024-01-15
 ```
 
 ### API Client Usage
@@ -202,6 +269,14 @@ pullapod-cli/
 │   │   ├── base-client.ts    # Abstract HTTP client
 │   │   ├── podcast-index-client.ts
 │   │   └── podcast-index-types.ts
+│   ├── commands/             # CLI command handlers
+│   │   └── search.ts         # Search command
+│   ├── formatters/           # Output formatting
+│   │   └── search-formatter.ts
+│   ├── utils/                # Shared utilities
+│   │   ├── errors.ts         # Error handling
+│   │   ├── format.ts         # Text formatting
+│   │   └── validation.ts     # Input validation
 │   ├── config/               # Configuration management
 │   │   └── env-config.ts     # Environment variable handling
 │   ├── index.ts              # CLI entry point
@@ -209,9 +284,14 @@ pullapod-cli/
 │   ├── downloader.ts         # Episode downloader
 │   ├── metadata.ts           # ID3 metadata embedding
 │   ├── filter.ts             # Episode filtering
-│   └── utils.ts              # Utility functions
+│   └── utils.ts              # Utility functions (legacy)
 ├── tests/                    # Jest test suite
+│   ├── commands/             # Command tests
+│   ├── formatters/           # Formatter tests
+│   └── utils/                # Utility tests
 ├── docs/                     # Documentation
+│   ├── requirements/         # Feature requirements
+│   ├── implementation/       # Implementation plans
 │   ├── PODCAST_INDEX_API.md  # Podcast Index API reference
 │   └── API_CLIENTS.md        # Client architecture guide
 ├── examples/                 # Usage examples
