@@ -89,3 +89,33 @@ export function loadPodcastIndexConfig(): PodcastIndexConfig {
     ),
   };
 }
+
+/**
+ * Application configuration
+ */
+export interface AppConfig {
+  podcastIndex: PodcastIndexConfig;
+}
+
+/**
+ * Load application configuration
+ * This function gracefully handles missing API credentials
+ */
+export function loadConfig(): AppConfig {
+  // Try to load .env file if it exists
+  loadEnvFile();
+
+  // Load Podcast Index config with defaults if credentials are missing
+  const podcastIndex: PodcastIndexConfig = {
+    apiKey: process.env.PODCAST_INDEX_API_KEY || '',
+    apiSecret: process.env.PODCAST_INDEX_API_SECRET || '',
+    baseUrl: getOptionalEnv(
+      'PODCAST_INDEX_BASE_URL',
+      'https://api.podcastindex.org/api/1.0'
+    ),
+  };
+
+  return {
+    podcastIndex,
+  };
+}

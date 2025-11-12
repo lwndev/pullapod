@@ -8,6 +8,7 @@ import { EpisodeFilter } from './filter';
 import { Downloader } from './downloader';
 import { MetadataEmbedder } from './metadata';
 import { FilterOptions } from './types';
+import { registerSearchCommand } from './commands/search';
 
 const packageJson = JSON.parse(
   readFileSync(path.join(__dirname, '../package.json'), 'utf-8')
@@ -20,6 +21,10 @@ program
   .description('Pull a Pod - Download podcast episodes from RSS feeds')
   .version(packageJson.version);
 
+// Register search command
+registerSearchCommand(program);
+
+// Default download command (for backward compatibility)
 program
   .requiredOption('-f, --feed <url>', 'RSS feed URL')
   .option('-o, --output <directory>', 'Output directory (defaults to current directory)', process.cwd())
