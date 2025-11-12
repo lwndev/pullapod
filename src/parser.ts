@@ -1,13 +1,9 @@
 import Parser from 'rss-parser';
 import { PodcastEpisode } from './types';
 
-interface CustomItem extends Parser.Item {
-  itunesImage?: { href?: string } | string;
+interface CustomItem {
+  itunesImage?: { $?: { href?: string }; href?: string } | string;
   duration?: string;
-  itunes?: {
-    image?: string;
-    duration?: string;
-  };
 }
 
 export class PodcastParser {
@@ -52,10 +48,18 @@ export class PodcastParser {
         .map(item => {
           // Try to get episode-specific artwork, fall back to podcast artwork
           let artwork = podcastArtwork;
-          if (item.itunes?.image) {
-            artwork = item.itunes.image;
-          } else if (item.itunesImage && typeof item.itunesImage === 'object' && 'href' in item.itunesImage) {
-            artwork = item.itunesImage.href;
+          if (item.itunesImage) {
+            // itunesImage can be an object with attributes ($), direct href, or a string
+            if (typeof item.itunesImage === 'object') {
+              // xml2js puts attributes in $ property
+              if ('$' in item.itunesImage && item.itunesImage.$?.href) {
+                artwork = item.itunesImage.$.href;
+              } else if ('href' in item.itunesImage && item.itunesImage.href) {
+                artwork = item.itunesImage.href;
+              }
+            } else if (typeof item.itunesImage === 'string') {
+              artwork = item.itunesImage;
+            }
           }
 
           return {
@@ -65,7 +69,7 @@ export class PodcastParser {
             description: item.contentSnippet || item.content,
             artwork,
             podcastTitle,
-            duration: item.duration || item.itunes?.duration,
+            duration: item.duration,
           };
         });
 
