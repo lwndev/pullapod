@@ -56,6 +56,8 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
+      // Allow unbound methods in tests (Jest mocks)
+      '@typescript-eslint/unbound-method': 'off',
       // Still enforce these in tests
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',

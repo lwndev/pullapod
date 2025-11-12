@@ -32,7 +32,7 @@ export class AppError extends Error {
   constructor(
     public code: ErrorCode,
     message: string,
-    public details?: any
+    public details?: unknown
   ) {
     super(message);
     this.name = 'AppError';
@@ -41,21 +41,21 @@ export class AppError extends Error {
 }
 
 export class ValidationError extends AppError {
-  constructor(message: string, details?: any) {
+  constructor(message: string, details?: unknown) {
     super(ErrorCode.INVALID_INPUT, message, details);
     this.name = 'ValidationError';
   }
 }
 
 export class ApiError extends AppError {
-  constructor(message: string, code: ErrorCode = ErrorCode.API_ERROR, details?: any) {
+  constructor(message: string, code: ErrorCode = ErrorCode.API_ERROR, details?: unknown) {
     super(code, message, details);
     this.name = 'ApiError';
   }
 }
 
 export class NetworkError extends AppError {
-  constructor(message: string, details?: any) {
+  constructor(message: string, details?: unknown) {
     super(ErrorCode.NETWORK_ERROR, message, details);
     this.name = 'NetworkError';
   }

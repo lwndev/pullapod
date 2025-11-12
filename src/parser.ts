@@ -1,8 +1,17 @@
 import Parser from 'rss-parser';
 import { PodcastEpisode } from './types';
 
+interface CustomItem extends Parser.Item {
+  itunesImage?: { href?: string } | string;
+  duration?: string;
+  itunes?: {
+    image?: string;
+    duration?: string;
+  };
+}
+
 export class PodcastParser {
-  private parser: Parser;
+  private parser: Parser<Record<string, never>, CustomItem>;
 
   constructor() {
     this.parser = new Parser({
@@ -45,8 +54,8 @@ export class PodcastParser {
           let artwork = podcastArtwork;
           if (item.itunes?.image) {
             artwork = item.itunes.image;
-          } else if ((item as any).itunesImage?.href) {
-            artwork = (item as any).itunesImage.href;
+          } else if (item.itunesImage && typeof item.itunesImage === 'object' && 'href' in item.itunesImage) {
+            artwork = item.itunesImage.href;
           }
 
           return {
@@ -56,7 +65,7 @@ export class PodcastParser {
             description: item.contentSnippet || item.content,
             artwork,
             podcastTitle,
-            duration: (item as any).duration || item.itunes?.duration,
+            duration: item.duration || item.itunes?.duration,
           };
         });
 

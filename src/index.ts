@@ -92,7 +92,7 @@ program
 
         // Embed metadata if enabled
         if (options.metadata) {
-          await embedder.embedMetadata(audioPath, artworkPath, episode);
+          embedder.embedMetadata(audioPath, artworkPath, episode);
         }
       }
 

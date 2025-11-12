@@ -149,7 +149,7 @@ testSuite('search command integration tests', () => {
       ).rejects.toThrow();
     }, 10000);
 
-    it('should handle network timeouts', async () => {
+    it('should handle network timeouts', () => {
       // This test just verifies the client is configured correctly
       expect(client).toBeDefined();
     }, 10000);

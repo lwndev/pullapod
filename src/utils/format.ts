@@ -46,7 +46,7 @@ export function stripHtml(html: string): string {
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&nbsp;/g, ' ')
-    .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec));
+    .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(parseInt(dec, 10)));
 
   // Clean up whitespace
   text = text.replace(/\s+/g, ' ').trim();

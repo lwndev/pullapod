@@ -6,11 +6,11 @@ export class MetadataEmbedder {
   /**
    * Embeds artwork and metadata into an audio file
    */
-  async embedMetadata(
+  embedMetadata(
     audioPath: string,
     artworkPath: string | undefined,
     episode: PodcastEpisode
-  ): Promise<void> {
+  ): void {
     const fileExtension = audioPath.toLowerCase().split('.').pop();
 
     // Only process MP3 files with node-id3

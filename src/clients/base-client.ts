@@ -9,7 +9,7 @@ export interface HttpClientConfig {
   timeout?: number;
 }
 
-export interface HttpResponse<T = any> {
+export interface HttpResponse<T = unknown> {
   data: T;
   status: number;
   headers: Headers;
@@ -19,7 +19,7 @@ export class HttpClientError extends Error {
   constructor(
     message: string,
     public statusCode?: number,
-    public response?: any
+    public response?: unknown
   ) {
     super(message);
     this.name = 'HttpClientError';
@@ -44,7 +44,7 @@ export abstract class BaseHttpClient {
   /**
    * Perform a GET request
    */
-  protected async get<T = any>(
+  protected async get<T = unknown>(
     path: string,
     params?: Record<string, string | number | boolean>,
     headers?: Record<string, string>
@@ -56,9 +56,9 @@ export abstract class BaseHttpClient {
   /**
    * Perform a POST request
    */
-  protected async post<T = any>(
+  protected async post<T = unknown>(
     path: string,
-    body?: any,
+    body?: unknown,
     headers?: Record<string, string>
   ): Promise<HttpResponse<T>> {
     const url = this.buildUrl(path);
@@ -89,10 +89,10 @@ export abstract class BaseHttpClient {
   /**
    * Make HTTP request with timeout and error handling
    */
-  protected async request<T = any>(
+  protected async request<T = unknown>(
     method: string,
     url: string,
-    body?: any,
+    body?: unknown,
     additionalHeaders?: Record<string, string>
   ): Promise<HttpResponse<T>> {
     const controller = new AbortController();

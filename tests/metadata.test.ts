@@ -58,7 +58,7 @@ describe('MetadataEmbedder', () => {
   };
 
   describe('embedMetadata', () => {
-    it('should embed metadata into MP3 file', async () => {
+    it('should embed metadata into MP3 file', () => {
       const episode = createMockEpisode();
       const audioPath = path.join(testDir, 'test.mp3');
       const artworkPath = path.join(testDir, 'artwork.jpg');
@@ -66,7 +66,7 @@ describe('MetadataEmbedder', () => {
       createMockMP3File(audioPath);
       createMockArtwork(artworkPath);
 
-      await embedder.embedMetadata(audioPath, artworkPath, episode);
+      embedder.embedMetadata(audioPath, artworkPath, episode);
 
       // Read back the tags
       const tags = NodeID3.read(audioPath);
@@ -75,7 +75,7 @@ describe('MetadataEmbedder', () => {
       expect(tags.album).toBe('Test Podcast');
     });
 
-    it('should embed artwork into MP3 file', async () => {
+    it('should embed artwork into MP3 file', () => {
       const episode = createMockEpisode();
       const audioPath = path.join(testDir, 'test.mp3');
       const artworkPath = path.join(testDir, 'artwork.jpg');
@@ -83,7 +83,7 @@ describe('MetadataEmbedder', () => {
       createMockMP3File(audioPath);
       createMockArtwork(artworkPath);
 
-      await embedder.embedMetadata(audioPath, artworkPath, episode);
+      embedder.embedMetadata(audioPath, artworkPath, episode);
 
       // Read back the tags
       const tags = NodeID3.read(audioPath);
@@ -94,7 +94,7 @@ describe('MetadataEmbedder', () => {
       }
     });
 
-    it('should skip metadata embedding for non-MP3 files', async () => {
+    it('should skip metadata embedding for non-MP3 files', () => {
       const episode = createMockEpisode();
       const audioPath = path.join(testDir, 'test.m4a');
       const artworkPath = path.join(testDir, 'artwork.jpg');
@@ -103,27 +103,27 @@ describe('MetadataEmbedder', () => {
       createMockArtwork(artworkPath);
 
       // Should not throw
-      await embedder.embedMetadata(audioPath, artworkPath, episode);
+      embedder.embedMetadata(audioPath, artworkPath, episode);
 
       // File should remain unchanged
       const content = fs.readFileSync(audioPath);
       expect(content.toString()).toBe('fake m4a data');
     });
 
-    it('should handle missing artwork gracefully', async () => {
+    it('should handle missing artwork gracefully', () => {
       const episode = createMockEpisode();
       const audioPath = path.join(testDir, 'test.mp3');
 
       createMockMP3File(audioPath);
 
       // Should not throw even without artwork
-      await embedder.embedMetadata(audioPath, undefined, episode);
+      embedder.embedMetadata(audioPath, undefined, episode);
 
       const tags = NodeID3.read(audioPath);
       expect(tags.title).toBe('Test Episode');
     });
 
-    it('should handle non-existent artwork file', async () => {
+    it('should handle non-existent artwork file', () => {
       const episode = createMockEpisode();
       const audioPath = path.join(testDir, 'test.mp3');
       const artworkPath = path.join(testDir, 'nonexistent.jpg');
@@ -131,13 +131,13 @@ describe('MetadataEmbedder', () => {
       createMockMP3File(audioPath);
 
       // Should not throw
-      await embedder.embedMetadata(audioPath, artworkPath, episode);
+      embedder.embedMetadata(audioPath, artworkPath, episode);
 
       const tags = NodeID3.read(audioPath);
       expect(tags.title).toBe('Test Episode');
     });
 
-    it('should embed description as comment', async () => {
+    it('should embed description as comment', () => {
       const episode = createMockEpisode({
         description: 'This is a detailed description of the episode',
       });
@@ -145,7 +145,7 @@ describe('MetadataEmbedder', () => {
 
       createMockMP3File(audioPath);
 
-      await embedder.embedMetadata(audioPath, undefined, episode);
+      embedder.embedMetadata(audioPath, undefined, episode);
 
       const tags = NodeID3.read(audioPath);
       expect(tags.comment).toBeDefined();
@@ -154,7 +154,7 @@ describe('MetadataEmbedder', () => {
       }
     });
 
-    it('should detect MIME type for PNG artwork', async () => {
+    it('should detect MIME type for PNG artwork', () => {
       const episode = createMockEpisode();
       const audioPath = path.join(testDir, 'test.mp3');
       const artworkPath = path.join(testDir, 'artwork.png');
@@ -167,7 +167,7 @@ describe('MetadataEmbedder', () => {
       ]);
       fs.writeFileSync(artworkPath, pngHeader);
 
-      await embedder.embedMetadata(audioPath, artworkPath, episode);
+      embedder.embedMetadata(audioPath, artworkPath, episode);
 
       const tags = NodeID3.read(audioPath);
       if (tags.image && typeof tags.image !== 'string') {
@@ -175,19 +175,19 @@ describe('MetadataEmbedder', () => {
       }
     });
 
-    it('should handle episodes without description', async () => {
+    it('should handle episodes without description', () => {
       const episode = createMockEpisode({ description: undefined });
       const audioPath = path.join(testDir, 'test.mp3');
 
       createMockMP3File(audioPath);
 
-      await embedder.embedMetadata(audioPath, undefined, episode);
+      embedder.embedMetadata(audioPath, undefined, episode);
 
       const tags = NodeID3.read(audioPath);
       expect(tags.title).toBe('Test Episode');
     });
 
-    it('should handle various audio file extensions', async () => {
+    it('should handle various audio file extensions', () => {
       const episode = createMockEpisode();
 
       const extensions = ['mp3', 'MP3', 'Mp3'];
@@ -197,7 +197,7 @@ describe('MetadataEmbedder', () => {
         createMockMP3File(audioPath);
 
         if (ext.toLowerCase() === 'mp3') {
-          await embedder.embedMetadata(audioPath, undefined, episode);
+          embedder.embedMetadata(audioPath, undefined, episode);
           const tags = NodeID3.read(audioPath);
           expect(tags.title).toBe('Test Episode');
         }
@@ -207,20 +207,20 @@ describe('MetadataEmbedder', () => {
       }
     });
 
-    it('should handle long descriptions', async () => {
+    it('should handle long descriptions', () => {
       const longDescription = 'A'.repeat(5000);
       const episode = createMockEpisode({ description: longDescription });
       const audioPath = path.join(testDir, 'test.mp3');
 
       createMockMP3File(audioPath);
 
-      await embedder.embedMetadata(audioPath, undefined, episode);
+      embedder.embedMetadata(audioPath, undefined, episode);
 
       const tags = NodeID3.read(audioPath);
       expect(tags.title).toBe('Test Episode');
     });
 
-    it('should handle special characters in metadata', async () => {
+    it('should handle special characters in metadata', () => {
       const episode = createMockEpisode({
         title: 'Episode: Special & "Quoted" Characters',
         podcastTitle: 'Podcast™ with © Symbol',
@@ -230,13 +230,13 @@ describe('MetadataEmbedder', () => {
 
       createMockMP3File(audioPath);
 
-      await embedder.embedMetadata(audioPath, undefined, episode);
+      embedder.embedMetadata(audioPath, undefined, episode);
 
       const tags = NodeID3.read(audioPath);
       expect(tags.title).toContain('Special');
     });
 
-    it('should handle corrupt MP3 files gracefully', async () => {
+    it('should handle corrupt MP3 files gracefully', () => {
       const episode = createMockEpisode();
       const audioPath = path.join(testDir, 'corrupt.mp3');
       const artworkPath = path.join(testDir, 'artwork.jpg');
@@ -246,14 +246,14 @@ describe('MetadataEmbedder', () => {
       createMockArtwork(artworkPath);
 
       // Should not throw
-      await expect(
-        embedder.embedMetadata(audioPath, artworkPath, episode)
-      ).resolves.not.toThrow();
+      expect(() => {
+        embedder.embedMetadata(audioPath, artworkPath, episode);
+      }).not.toThrow();
     });
   });
 
   describe('MIME type detection', () => {
-    it('should detect JPEG MIME type', async () => {
+    it('should detect JPEG MIME type', () => {
       const episode = createMockEpisode();
       const audioPath = path.join(testDir, 'test.mp3');
       const artworkPath = path.join(testDir, 'artwork.jpg');
@@ -261,7 +261,7 @@ describe('MetadataEmbedder', () => {
       createMockMP3File(audioPath);
       createMockArtwork(artworkPath);
 
-      await embedder.embedMetadata(audioPath, artworkPath, episode);
+      embedder.embedMetadata(audioPath, artworkPath, episode);
 
       const tags = NodeID3.read(audioPath);
       if (tags.image && typeof tags.image !== 'string') {
@@ -269,7 +269,7 @@ describe('MetadataEmbedder', () => {
       }
     });
 
-    it('should handle JPEG extension variations', async () => {
+    it('should handle JPEG extension variations', () => {
       const episode = createMockEpisode();
 
       const extensions = ['jpg', 'jpeg', 'JPG', 'JPEG'];
@@ -281,7 +281,7 @@ describe('MetadataEmbedder', () => {
         createMockMP3File(audioPath);
         createMockArtwork(artworkPath);
 
-        await embedder.embedMetadata(audioPath, artworkPath, episode);
+        embedder.embedMetadata(audioPath, artworkPath, episode);
 
         const tags = NodeID3.read(audioPath);
         if (tags.image && typeof tags.image !== 'string') {
