@@ -30,6 +30,7 @@ describe('PodcastIndexClient', () => {
   let client: PodcastIndexClient;
 
   beforeEach(() => {
+    fetchMock.enableMocks();
     client = new PodcastIndexClient(mockConfig);
     fetchMock.resetMocks();
   });

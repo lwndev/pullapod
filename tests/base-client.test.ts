@@ -42,6 +42,7 @@ describe('BaseHttpClient', () => {
   let client: TestClient;
 
   beforeEach(() => {
+    fetchMock.enableMocks();
     client = new TestClient('https://api.example.com');
     fetchMock.resetMocks();
   });
