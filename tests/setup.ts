@@ -1,8 +1,4 @@
-import fetchMock from 'jest-fetch-mock';
 import nock from 'nock';
-
-// Enable fetch mocking for downloader and integration tests
-fetchMock.enableMocks();
 
 // Enable nock for HTTP interception (used by rss-parser tests)
 nock.disableNetConnect();
