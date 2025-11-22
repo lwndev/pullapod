@@ -2,21 +2,29 @@
  * Integration tests for search command
  * Tests actual API integration with Podcast Index
  *
- * Note: These tests require valid API credentials to be set
- * Set SKIP_INTEGRATION_TESTS=true to skip these tests
+ * Note: These tests require valid API credentials to be set in .env
+ * - Automatically runs locally when credentials are available
+ * - Skipped in CI environments (GitHub Actions, etc.)
+ * - Set SKIP_INTEGRATION_TESTS=true to explicitly skip
  */
 
 import { PodcastIndexClient } from '../../src/clients/podcast-index-client';
 import { loadConfig } from '../../src/config';
 
 // Check if we should skip integration tests
-// Skip by default unless explicitly enabled with RUN_INTEGRATION_TESTS=true
+// Run automatically if credentials are available, unless in CI or explicitly disabled
 const shouldSkipIntegrationTests = (): boolean => {
-  // Only run if explicitly enabled
-  if (process.env.RUN_INTEGRATION_TESTS !== 'true') {
+  // Skip if explicitly disabled
+  if (process.env.SKIP_INTEGRATION_TESTS === 'true') {
     return true;
   }
 
+  // Skip in CI environments (GitHub Actions, CircleCI, Travis, etc.)
+  if (process.env.CI === 'true') {
+    return true;
+  }
+
+  // Check if credentials are available
   try {
     const config = loadConfig();
     if (!config.podcastIndex.apiKey || !config.podcastIndex.apiSecret) {
