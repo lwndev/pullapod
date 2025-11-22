@@ -1,10 +1,6 @@
 # Dependencies
 node_modules/
 
-# Agentic Tools
-.claude/
-.cursor/
-
 # Build output
 dist/
 
@@ -14,6 +10,9 @@ dist/
 # Environment variables
 .env
 .env.local
+
+# Podcast Download Directory
+podcasts/
 
 # NPM
 *.tgz

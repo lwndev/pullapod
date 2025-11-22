@@ -2,38 +2,14 @@
  * Integration tests for search command
  * Tests actual API integration with Podcast Index
  *
- * Note: These tests require valid API credentials to be set
- * Set SKIP_INTEGRATION_TESTS=true to skip these tests
+ * Note: These tests require valid API credentials to be set in .env
+ * Run with: npm run test:integration
  */
 
-import { PodcastIndexClient } from '../../src/clients/podcast-index-client';
-import { loadConfig } from '../../src/config';
+import { PodcastIndexClient } from '../../../src/clients/podcast-index-client';
+import { loadConfig } from '../../../src/config';
 
-// Check if we should skip integration tests
-// Skip by default unless explicitly enabled with RUN_INTEGRATION_TESTS=true
-const shouldSkipIntegrationTests = (): boolean => {
-  // Only run if explicitly enabled
-  if (process.env.RUN_INTEGRATION_TESTS !== 'true') {
-    return true;
-  }
-
-  try {
-    const config = loadConfig();
-    if (!config.podcastIndex.apiKey || !config.podcastIndex.apiSecret) {
-      return true;
-    }
-    return false;
-  } catch {
-    return true;
-  }
-};
-
-const SKIP_TESTS = shouldSkipIntegrationTests();
-
-// Use describe.skip if tests should be skipped
-const testSuite = SKIP_TESTS ? describe.skip : describe;
-
-testSuite('search command integration tests', () => {
+describe('search command integration tests', () => {
   let client: PodcastIndexClient;
   let config: any;
 
