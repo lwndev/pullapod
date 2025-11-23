@@ -96,7 +96,42 @@ pullapod search technology --language en
 pullapod search "javascrpt" --similar
 ```
 
-The search results will show you the feed URL which you can use with the download command below.
+The search results will show you the feed URL which you can use with the episodes and download commands below.
+
+#### Preview Episode Details
+
+Before downloading, you can preview details of recent episodes from a podcast feed:
+
+```bash
+pullapod episodes <feed> [options]
+```
+
+**Episodes Options:**
+
+- `--max <number>` - Maximum episodes to show (1-100, default: 20)
+- `--since <date>` - Only episodes after date (YYYY-MM-DD format)
+- `--full` - Show full descriptions instead of truncated
+
+**Episodes Examples:**
+
+```bash
+# Preview recent episodes using feed URL
+pullapod episodes https://example.com/podcast.rss
+
+# Preview episodes using Podcast Index feed ID
+pullapod episodes 920666
+
+# Show more episodes
+pullapod episodes https://example.com/podcast.rss --max 50
+
+# Show only episodes since a specific date
+pullapod episodes https://example.com/podcast.rss --since 2024-01-01
+
+# Show full episode descriptions
+pullapod episodes https://example.com/podcast.rss --full
+```
+
+The episodes list will show you episode titles, publish dates, and descriptions to help you decide what to download.
 
 #### Download Podcast Episodes
 
@@ -156,7 +191,10 @@ pullapod --feed https://example.com/podcast.rss --date 2024-01-15 --no-metadata
 pullapod search "javascript podcast" --max 5
 
 # 2. Copy the feed URL from the search results
-# 3. Download a specific episode
+# 3. Preview recent episodes
+pullapod episodes https://feeds.fireside.fm/javascriptjabber/rss --max 10
+
+# 4. Download a specific episode
 pullapod --feed https://feeds.fireside.fm/javascriptjabber/rss --date 2024-01-15
 ```
 
