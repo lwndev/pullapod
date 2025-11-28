@@ -37,8 +37,10 @@ export function determineFeedStatus(feed: PodcastFeed): FeedStatus {
     return 'dead';
   }
 
-  // Check newestItemPublishTime (preferred) or lastUpdateTime
-  const lastPublishTime = (feed as any).newestItemPublishTime || feed.lastUpdateTime;
+  // Use newestItemPublishTime (actual episode publish date) when available, falling back
+  // to lastUpdateTime (feed crawl date). The newestItemPublishTime is more accurate for
+  // determining feed activity since lastUpdateTime reflects crawler activity, not content updates.
+  const lastPublishTime = feed.newestItemPublishTime || feed.lastUpdateTime;
 
   if (!lastPublishTime) {
     return 'inactive';
@@ -91,6 +93,11 @@ export function formatLastUpdate(timestamp: number): string {
 /**
  * Format Unix timestamp to relative time
  * Examples: "2 days ago", "3 weeks ago", "1 month ago"
+ *
+ * Note: Month and year calculations use fixed approximations (30 days/month, 365 days/year)
+ * for simplicity. This provides reasonable accuracy for display purposes without the
+ * complexity of calendar-aware calculations.
+ *
  * @param timestamp - Unix timestamp
  * @returns Relative time string
  */
@@ -111,6 +118,7 @@ export function formatRelativeTime(timestamp: number): string {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
   const weeks = Math.floor(days / 7);
+  // Approximations: 30 days/month, 365 days/year (sufficient for relative time display)
   const months = Math.floor(days / 30);
   const years = Math.floor(days / 365);
 
@@ -257,9 +265,9 @@ export function formatPodcastInfo(feed: PodcastFeed): string {
   const explicit = formatExplicit(feed.explicit);
   lines.push(`Content:      ${medium} (${explicit})`);
 
-  // Last update and status
-  const newestItemPublishTime = (feed as any).newestItemPublishTime || feed.lastUpdateTime;
-  lines.push(`Last Updated: ${formatLastUpdate(newestItemPublishTime)}`);
+  // Last update and status - prefer newestItemPublishTime (actual episode date) over lastUpdateTime (crawl date)
+  const lastPublishTime = feed.newestItemPublishTime || feed.lastUpdateTime;
+  lines.push(`Last Updated: ${formatLastUpdate(lastPublishTime)}`);
 
   const status = determineFeedStatus(feed);
   lines.push(`Status:       ${formatFeedStatus(status)}`);
@@ -275,6 +283,8 @@ export function formatPodcastInfo(feed: PodcastFeed): string {
 
 /**
  * Wrap text to specified width
+ * Handles edge cases where individual words (URLs, long compound words) exceed max width
+ * by breaking them at the boundary.
  * @param text - Text to wrap
  * @param maxWidth - Maximum line width
  * @returns Array of wrapped lines
@@ -289,7 +299,18 @@ function wrapText(text: string, maxWidth: number): string[] {
   let currentLine = '';
 
   for (const word of words) {
-    if (currentLine.length === 0) {
+    // Handle words that exceed maxWidth by breaking them
+    if (word.length > maxWidth) {
+      // Flush current line if not empty
+      if (currentLine.length > 0) {
+        lines.push(currentLine);
+        currentLine = '';
+      }
+      // Break the long word into chunks
+      for (let i = 0; i < word.length; i += maxWidth) {
+        lines.push(word.slice(i, i + maxWidth));
+      }
+    } else if (currentLine.length === 0) {
       currentLine = word;
     } else if (currentLine.length + 1 + word.length <= maxWidth) {
       currentLine += ' ' + word;
