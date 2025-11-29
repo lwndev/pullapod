@@ -8,7 +8,7 @@ import * as readline from 'readline';
 import { PodcastIndexClient } from '../clients/podcast-index-client';
 import { loadConfig } from '../config';
 import { validateUrl } from '../utils/validation';
-import { formatErrorMessage } from '../utils/errors';
+import { formatErrorMessage, isNetworkError, AppError, ErrorCode } from '../utils/errors';
 import {
   addFavorite,
   findFavoriteMatches,
@@ -78,6 +78,32 @@ function isAffirmative(answer: string): boolean {
 }
 
 /**
+ * Sanitize feed name to prevent display issues (Important #5)
+ * Removes control characters, normalizes whitespace, and limits length
+ */
+function sanitizeFeedName(name: string): string {
+  // Remove control characters (ASCII 0-31 and 127) using character code filtering
+  // This approach avoids eslint no-control-regex rule violation
+  let sanitized = '';
+  for (const char of name) {
+    const code = char.charCodeAt(0);
+    // Keep only printable characters (exclude control chars 0-31 and DEL 127)
+    if (code > 31 && code !== 127) {
+      sanitized += char;
+    }
+  }
+
+  return (
+    sanitized
+      // Normalize whitespace (multiple spaces/tabs/newlines to single space)
+      .replace(/\s+/g, ' ')
+      .trim()
+      // Reasonable length limit
+      .slice(0, 200)
+  );
+}
+
+/**
  * Initialize Podcast Index client
  */
 function initializeClient(): PodcastIndexClient {
@@ -113,7 +139,31 @@ export async function addCommand(feedUrl: string, options: AddOptions): Promise<
     const client = initializeClient();
     console.log('Fetching feed information...');
 
-    const response = await client.getPodcastByUrl(feedUrl);
+    let response;
+    try {
+      response = await client.getPodcastByUrl(feedUrl);
+    } catch (apiError) {
+      // Network error handling (Important #4)
+      if (isNetworkError(apiError)) {
+        console.error('\nNetwork Error: Unable to reach Podcast Index API');
+        console.error('Please check your internet connection and try again.');
+        process.exit(1);
+      }
+
+      // Rate limiting check (Important #4)
+      if (
+        apiError instanceof AppError &&
+        (apiError.code === ErrorCode.API_RATE_LIMIT ||
+          (apiError.message && apiError.message.toLowerCase().includes('rate limit')))
+      ) {
+        console.error('\nRate Limit: Too many requests to Podcast Index API');
+        console.error('Please wait a moment and try again.');
+        process.exit(1);
+      }
+
+      throw apiError;
+    }
+
     const feed = response.feed || (response.feeds && response.feeds[0]);
 
     if (!feed) {
@@ -124,8 +174,16 @@ export async function addCommand(feedUrl: string, options: AddOptions): Promise<
       process.exit(1);
     }
 
-    // Determine name to use
-    const name = options.name || feed.title || feedUrl;
+    // Determine name to use and sanitize it (Important #5)
+    const rawName = options.name || feed.title || feedUrl;
+    const name = sanitizeFeedName(rawName);
+
+    // Validate that name isn't empty after sanitization
+    if (!name) {
+      console.error('Error: Feed name cannot be empty');
+      console.error('Please provide a valid name with --name option');
+      process.exit(1);
+    }
 
     // Create favorite entry
     const favorite: FavoriteFeed = {
@@ -147,6 +205,13 @@ export async function addCommand(feedUrl: string, options: AddOptions): Promise<
     console.log(formatAddSuccess(favorite, totalCount));
     process.exit(0);
   } catch (error) {
+    // Additional network error handling at outer level (Important #4)
+    if (isNetworkError(error)) {
+      console.error('\nNetwork Error: Unable to reach Podcast Index API');
+      console.error('Please check your internet connection and try again.');
+      process.exit(1);
+    }
+
     console.error('\nError:', formatErrorMessage(error));
     if (process.env.DEBUG) {
       console.error(error);
