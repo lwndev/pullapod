@@ -21,6 +21,14 @@ import {
   Category,
 } from './podcast-index-types';
 
+/**
+ * Simple API response for endpoints that don't return structured data
+ */
+interface SimpleApiResponse {
+  status: string;
+  description?: string;
+}
+
 export interface PodcastIndexClientConfig {
   apiKey: string;
   apiSecret: string;
@@ -82,7 +90,7 @@ export class PodcastIndexClient extends BaseHttpClient {
   ): Promise<PodcastIndexResponse<PodcastFeed>> {
     const response = await this.get<PodcastIndexResponse<PodcastFeed>>(
       '/search/byterm',
-      params as any,
+      { ...params },
       this.getAuthHeaders()
     );
     return response.data;
@@ -97,7 +105,7 @@ export class PodcastIndexClient extends BaseHttpClient {
   ): Promise<PodcastIndexResponse<PodcastFeed>> {
     const response = await this.get<PodcastIndexResponse<PodcastFeed>>(
       '/search/bytitle',
-      params as any,
+      { ...params },
       this.getAuthHeaders()
     );
     return response.data;
@@ -168,7 +176,7 @@ export class PodcastIndexClient extends BaseHttpClient {
   ): Promise<PodcastIndexResponse<PodcastFeed>> {
     const response = await this.get<PodcastIndexResponse<PodcastFeed>>(
       '/podcasts/trending',
-      params as any,
+      params ? { ...params } : undefined,
       this.getAuthHeaders()
     );
     return response.data;
@@ -185,7 +193,7 @@ export class PodcastIndexClient extends BaseHttpClient {
   ): Promise<PodcastIndexResponse<PodcastEpisode>> {
     const response = await this.get<PodcastIndexResponse<PodcastEpisode>>(
       '/episodes/byfeedid',
-      params as any,
+      { ...params },
       this.getAuthHeaders()
     );
     return response.data;
@@ -200,7 +208,7 @@ export class PodcastIndexClient extends BaseHttpClient {
   ): Promise<PodcastIndexResponse<PodcastEpisode>> {
     const response = await this.get<PodcastIndexResponse<PodcastEpisode>>(
       '/episodes/byfeedurl',
-      params as any,
+      { ...params },
       this.getAuthHeaders()
     );
     return response.data;
@@ -228,7 +236,7 @@ export class PodcastIndexClient extends BaseHttpClient {
     guid: string,
     feedUrl?: string
   ): Promise<PodcastIndexResponse<PodcastEpisode>> {
-    const params: any = { guid };
+    const params: Record<string, string> = { guid };
     if (feedUrl) {
       params.feedurl = feedUrl;
     }
@@ -252,7 +260,7 @@ export class PodcastIndexClient extends BaseHttpClient {
     lang?: string,
     cat?: string
   ): Promise<PodcastIndexResponse<PodcastEpisode>> {
-    const params: any = { max };
+    const params: Record<string, string | number> = { max };
     if (lang) params.lang = lang;
     if (cat) params.cat = cat;
 
@@ -275,7 +283,7 @@ export class PodcastIndexClient extends BaseHttpClient {
   ): Promise<PodcastIndexResponse<PodcastEpisode>> {
     const response = await this.get<PodcastIndexResponse<PodcastEpisode>>(
       '/recent/episodes',
-      params as any,
+      params ? { ...params } : undefined,
       this.getAuthHeaders()
     );
     return response.data;
@@ -290,7 +298,7 @@ export class PodcastIndexClient extends BaseHttpClient {
   ): Promise<PodcastIndexResponse<PodcastFeed>> {
     const response = await this.get<PodcastIndexResponse<PodcastFeed>>(
       '/recent/feeds',
-      params as any,
+      params ? { ...params } : undefined,
       this.getAuthHeaders()
     );
     return response.data;
@@ -304,7 +312,7 @@ export class PodcastIndexClient extends BaseHttpClient {
   ): Promise<PodcastIndexResponse<PodcastFeed>> {
     const response = await this.get<PodcastIndexResponse<PodcastFeed>>(
       '/recent/newfeeds',
-      params as any,
+      params ? { ...params } : undefined,
       this.getAuthHeaders()
     );
     return response.data;
@@ -342,8 +350,8 @@ export class PodcastIndexClient extends BaseHttpClient {
    * Notify the index that a feed has been updated
    * @param feedUrl URL of the podcast feed
    */
-  async notifyFeedUpdate(feedUrl: string): Promise<any> {
-    const response = await this.get(
+  async notifyFeedUpdate(feedUrl: string): Promise<SimpleApiResponse> {
+    const response = await this.get<SimpleApiResponse>(
       '/hub/pubnotify',
       { url: feedUrl },
       this.getAuthHeaders()
@@ -356,8 +364,8 @@ export class PodcastIndexClient extends BaseHttpClient {
    * Note: Requires appropriate API permissions
    * @param feedUrl URL of the podcast feed to add
    */
-  async addFeed(feedUrl: string): Promise<any> {
-    const response = await this.get(
+  async addFeed(feedUrl: string): Promise<SimpleApiResponse> {
+    const response = await this.get<SimpleApiResponse>(
       '/add/byfeedurl',
       { url: feedUrl },
       this.getAuthHeaders()

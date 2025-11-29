@@ -43,7 +43,8 @@ export class PodcastParser {
       let podcastArtwork: string | undefined;
       if (feed.image?.url) {
         // Handle case where url might be an array
-        podcastArtwork = Array.isArray(feed.image.url) ? feed.image.url[0] : feed.image.url;
+        const url = feed.image.url;
+        podcastArtwork = Array.isArray(url) ? String(url[0]) : url;
       } else if (feed.itunes?.image) {
         podcastArtwork = feed.itunes.image;
       }

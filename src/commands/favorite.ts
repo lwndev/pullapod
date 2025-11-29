@@ -223,7 +223,7 @@ export async function addCommand(feedUrl: string, options: AddOptions): Promise<
 /**
  * Execute list subcommand
  */
-export async function listCommand(): Promise<void> {
+export function listCommand(): void {
   try {
     const feeds = listFavorites();
     console.log(formatFavoritesList(feeds));

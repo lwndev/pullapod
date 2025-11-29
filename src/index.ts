@@ -13,9 +13,23 @@ import { registerEpisodesCommand } from './commands/episodes';
 import { registerInfoCommand } from './commands/info';
 import { registerFavoriteCommand } from './commands/favorite';
 
-const packageJson = JSON.parse(
+interface PackageJson {
+  version: string;
+}
+
+interface DownloadOptions {
+  feed: string;
+  output: string;
+  date?: string;
+  start?: string;
+  end?: string;
+  name?: string;
+  metadata: boolean;
+}
+
+const packageJson: PackageJson = JSON.parse(
   readFileSync(path.join(__dirname, '../package.json'), 'utf-8')
-);
+) as PackageJson;
 
 const program = new Command();
 
@@ -47,7 +61,7 @@ program
   .option('-e, --end <date>', 'End date for range download (YYYY-MM-DD)')
   .option('-n, --name <name>', 'Download episode by name (partial match)')
   .option('--no-metadata', 'Skip embedding artwork and metadata')
-  .action(async (options) => {
+  .action(async (options: DownloadOptions) => {
     try {
       // Validate options
       const hasDateFilter = options.date || options.start || options.end || options.name;

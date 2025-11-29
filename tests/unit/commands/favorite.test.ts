@@ -227,21 +227,21 @@ describe('favorite command', () => {
   });
 
   describe('list subcommand', () => {
-    it('should list favorites', async () => {
+    it('should list favorites', () => {
       mockFavorites.feeds.push(mockFavorite);
 
-      await expect(listCommand()).rejects.toThrow('process.exit called');
+      expect(() => listCommand()).toThrow('process.exit called');
 
       const allLogCalls = consoleSpy.mock.calls.flat().join(' ');
       expect(allLogCalls).toContain('JavaScript Jabber');
       expect(processExitSpy).toHaveBeenCalledWith(0);
     });
 
-    it('should handle empty favorites', async () => {
+    it('should handle empty favorites', () => {
       // Ensure mock favorites is empty
       mockFavorites.feeds = [];
 
-      await expect(listCommand()).rejects.toThrow('process.exit called');
+      expect(() => listCommand()).toThrow('process.exit called');
 
       const allLogCalls = consoleSpy.mock.calls.flat().join(' ');
       expect(allLogCalls).toContain('No saved podcasts');

@@ -87,7 +87,7 @@ export class Downloader {
     const writer = fs.createWriteStream(outputPath);
     let downloadedBytes = 0;
 
-    const readable = Readable.fromWeb(response.body as any);
+    const readable = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
 
     readable.on('data', (chunk: Buffer) => {
       downloadedBytes += chunk.length;

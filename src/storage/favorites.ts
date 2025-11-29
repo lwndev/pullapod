@@ -323,7 +323,7 @@ export function loadFavorites(filePath?: string): FavoritesData {
 
   try {
     const content = fs.readFileSync(favoritesPath, 'utf-8');
-    const data = JSON.parse(content);
+    const data: unknown = JSON.parse(content);
 
     if (!validateFavoritesData(data)) {
       // Backup corrupted file before throwing (Important #6)
