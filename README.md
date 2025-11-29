@@ -10,6 +10,10 @@ A command-line utility to download podcast episodes from RSS feeds with proper n
   - Search by keywords, title, author
   - Filter by language
   - Find feed URLs for downloading
+- **Check recent episodes** from your saved favorites
+  - View new episodes across all saved podcasts
+  - Filter by date range or specific feed
+  - Parallel fetching for fast results
 - **Download podcast episodes** from any RSS feed
   - Filter episodes by:
     - Specific publish date
@@ -210,6 +214,41 @@ pullapod favorite clear --force
 
 Favorites are stored in `~/.config/pullapod/favorites.json` (or `$XDG_CONFIG_HOME/pullapod/favorites.json` if set).
 
+#### View Recent Episodes from Favorites
+
+Check for new episodes across all your saved favorite podcasts:
+
+```bash
+pullapod recent [options]
+```
+
+**Recent Options:**
+
+- `--max <number>` - Max episodes per feed (1-20, default: 5)
+- `--days <number>` - Only episodes from last N days (1-90, default: 7)
+- `--feed <name>` - Show recent episodes from specific saved feed only
+
+**Recent Examples:**
+
+```bash
+# Show recent episodes from all saved feeds (last 7 days)
+pullapod recent
+
+# Show up to 10 episodes per feed
+pullapod recent --max 10
+
+# Show episodes from last 14 days
+pullapod recent --days 14
+
+# Show recent episodes from specific saved feed
+pullapod recent --feed "JavaScript Jabber"
+
+# Combine options
+pullapod recent --feed "Syntax" --max 3 --days 3
+```
+
+The output groups episodes by podcast, showing episode titles and publish dates. Use this to quickly check for new content before downloading.
+
 #### Download Podcast Episodes
 
 ```bash
@@ -271,10 +310,16 @@ pullapod search "javascript podcast" --max 5
 # 3. Get detailed info about the podcast
 pullapod info https://feeds.fireside.fm/javascriptjabber/rss
 
-# 4. Preview recent episodes
+# 4. Save it to your favorites
+pullapod favorite add https://feeds.fireside.fm/javascriptjabber/rss
+
+# 5. Check recent episodes across all your favorites
+pullapod recent
+
+# 6. Or preview episodes from a specific feed
 pullapod episodes https://feeds.fireside.fm/javascriptjabber/rss --max 10
 
-# 5. Download a specific episode
+# 7. Download a specific episode
 pullapod --feed https://feeds.fireside.fm/javascriptjabber/rss --date 2024-01-15
 ```
 
@@ -398,6 +443,7 @@ pullapod-cli/
 │   │   ├── episodes.ts       # Episodes command
 │   │   ├── favorite.ts       # Favorite command
 │   │   ├── info.ts           # Info command
+│   │   ├── recent.ts         # Recent command
 │   │   └── search.ts         # Search command
 │   ├── config/               # Configuration management
 │   │   ├── env-config.ts     # Environment variable handling
@@ -406,6 +452,7 @@ pullapod-cli/
 │   │   ├── episodes-formatter.ts
 │   │   ├── favorite-formatter.ts
 │   │   ├── info-formatter.ts
+│   │   ├── recent-formatter.ts
 │   │   └── search-formatter.ts
 │   ├── storage/              # Data persistence
 │   │   └── favorites.ts      # Favorites file management
