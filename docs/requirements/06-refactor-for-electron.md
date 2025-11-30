@@ -8,7 +8,7 @@ Restructure the pullapod-cli codebase into a monorepo architecture that separate
 `FEAT-006`
 
 ## Priority
-Low - Foundation for future desktop application (implement after FEAT-003, FEAT-004, FEAT-005)
+High - This feature is a foundation for future desktop application which expands the potential user base of Pullapod
 
 ## User Story
 
@@ -78,8 +78,7 @@ pullapod/
 │       ├── package.json          # depends on @pullapod/core
 │       └── tsconfig.json
 │
-├── package.json                  # Workspace root
-├── pnpm-workspace.yaml           # Workspace configuration
+├── package.json                  # Workspace root (includes workspaces config)
 ├── tsconfig.base.json            # Shared TypeScript config
 └── README.md
 ```
@@ -89,8 +88,9 @@ pullapod/
 ### FR-1: Monorepo Setup
 
 #### FR-1.1: Workspace Configuration
-- Use pnpm workspaces (preferred) or npm workspaces
-- Configure workspace root `package.json` with workspace paths
+- Use npm workspaces (native since npm v7, stable in npm v10+)
+- Configure workspace root `package.json` with `"workspaces": ["packages/*"]`
+- Add `"private": true` to root package.json (required for workspaces)
 - Set up shared development dependencies at root level
 - Configure shared scripts for building, testing, linting
 
@@ -100,8 +100,10 @@ pullapod/
 - Desktop package: `pullapod-desktop` (future)
 
 #### FR-1.3: Inter-package Dependencies
-- CLI depends on `@pullapod/core` via workspace protocol
-- Use `"@pullapod/core": "workspace:*"` in package.json
+- CLI depends on `@pullapod/core` as a local workspace package
+- Use `"@pullapod/core": "*"` in package.json (npm auto-resolves to local workspace)
+- Alternatively, use `npm install @pullapod/core -w pullapod` to add the dependency
+- npm automatically symlinks workspace packages during install
 - Ensure TypeScript project references work correctly
 
 ### FR-2: Core Package Extraction
@@ -324,10 +326,12 @@ export class UIProgressReporter implements ProgressReporter {
 - Configure path aliases for clean imports
 
 #### NFR-1.2: Build Scripts
-- `pnpm build` - Build all packages in dependency order
-- `pnpm build:core` - Build core only
-- `pnpm build:cli` - Build CLI (builds core if needed)
-- `pnpm watch` - Watch mode for development
+- `npm run build` - Build all packages in dependency order
+- `npm run build -w @pullapod/core` - Build core only
+- `npm run build -w pullapod` - Build CLI (builds core if needed)
+- `npm run watch` - Watch mode for development
+
+Note: The `-w` flag targets a specific workspace by package name.
 
 #### NFR-1.3: Build Output
 - Core: CommonJS and ESM dual output
@@ -342,10 +346,10 @@ export class UIProgressReporter implements ProgressReporter {
 - Shared test utilities at root or in core
 
 #### NFR-2.2: Test Scripts
-- `pnpm test` - Run all tests
-- `pnpm test:core` - Run core tests only
-- `pnpm test:cli` - Run CLI tests only
-- `pnpm test:integration` - Run integration tests
+- `npm test --workspaces` - Run all tests across workspaces
+- `npm test -w @pullapod/core` - Run core tests only
+- `npm test -w pullapod` - Run CLI tests only
+- `npm run test:integration` - Run integration tests
 
 #### NFR-2.3: Coverage
 - Maintain >80% coverage for core package
@@ -355,7 +359,7 @@ export class UIProgressReporter implements ProgressReporter {
 ### NFR-3: Development Experience
 
 #### NFR-3.1: Hot Reload
-- `pnpm dev` should enable watch mode
+- `npm run dev` should enable watch mode
 - Changes to core should trigger CLI rebuild
 - Fast iteration during development
 
@@ -395,10 +399,9 @@ export class UIProgressReporter implements ProgressReporter {
 ## Migration Steps
 
 ### Step 1: Repository Setup
-1. Initialize pnpm workspace at repo root
+1. Add `"private": true` and `"workspaces": ["packages/*"]` to root package.json
 2. Create `packages/` directory structure
-3. Create workspace configuration files
-4. Set up shared TypeScript configuration
+3. Set up shared TypeScript configuration
 
 ### Step 2: Create Core Package
 1. Create `packages/core/` with package.json
@@ -439,7 +442,6 @@ export class UIProgressReporter implements ProgressReporter {
 - `jest` - Test runner
 - `eslint` - Linting
 - `prettier` - Code formatting
-- `pnpm` - Package manager (implicit)
 
 ### Core Package Dependencies
 - `rss-parser` - RSS feed parsing
@@ -461,7 +463,7 @@ export class UIProgressReporter implements ProgressReporter {
 5. **Error serialization**: Ensure errors can be serialized for IPC
 6. **Progress callback errors**: Handle errors in progress callbacks gracefully
 7. **Partial builds**: Handle incremental builds correctly
-8. **Clean builds**: Ensure `pnpm clean && pnpm build` works
+8. **Clean builds**: Ensure `npm run clean && npm run build` works
 9. **IDE caching**: Document when to restart TypeScript server
 10. **Global installation**: Verify `npm install -g pullapod` still works
 
@@ -498,7 +500,7 @@ export class UIProgressReporter implements ProgressReporter {
 
 ## Acceptance Criteria
 
-- [ ] Monorepo structure created with pnpm workspaces
+- [ ] Monorepo structure created with npm workspaces
 - [ ] Core package contains all business logic
 - [ ] CLI package depends on core package
 - [ ] All existing CLI commands work identically
